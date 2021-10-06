@@ -95,37 +95,83 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 					try {
 
-						String[] entradaInserts;
+						String[] inputInserts;
 
-						entradaInserts = entrada.getText().split(" ");
+						LinkedList<String> entradaInserts = new LinkedList<String>();
+
+						String texto = entrada.getText().replace("`", "");
+
+						inputInserts = texto.split(" ");
 
 						int indice = 0;
 
 						String reconstruirInserts = "";
 
-						for (int i = 1; i < entradaInserts.length; i++) {
+						for (int i = 1; i < inputInserts.length; i++) {
 
-							reconstruirInserts += entradaInserts[indice];
+							reconstruirInserts += inputInserts[indice];
 
 							indice++;
 
 						}
 
-						entradaInserts = reconstruirInserts.split(",");
+						inputInserts = reconstruirInserts.split(",");
 
-						for (int i = 0; i < entradaInserts.length; i++) {
+						for (int i = 1; i < inputInserts.length; i++) {
 
-							inserts.add(entradaInserts[i]);
+							entradaInserts.add(inputInserts[i]);
+
+						}
+
+						try {
+							entradaInserts.add(texto.substring(texto.lastIndexOf(",") + 1, texto.length()));
+						}
+
+						catch (Exception e1) {
+
+						}
+
+						LinkedList<Integer> descontar = new LinkedList<Integer>();
+
+						for (int x = 0; x < numeroCamposTablasNew.size(); x++) {
+
+							descontar.add(numeroCamposTablasNew.get(x) - 3);
+
+						}
+
+						int contador = 0;
+
+						for (int i = 0; i < entradaInserts.size(); i++) {
+
+							if (contador < descontar.size() && descontar.get(contador) >= 0) {
+
+								i += descontar.get(contador);
+
+								contador++;
+
+							}
+
+							entradaInserts.set(i, limpiarCadena(entradaInserts.get(i)));
+
+							if (!entradaInserts.get(i).isEmpty()) {
+
+								if (entradaInserts.get(i).contains("VALUES")) {
+
+									entradaInserts.set(i,
+											entradaInserts.get(i).substring(entradaInserts.get(i).indexOf("VALUES") + 6,
+													entradaInserts.get(i).length()));
+
+								}
+
+								inserts.add(entradaInserts.get(i));
+
+							}
 
 						}
 
 						int empezarInsers = 0;
 
-						// inserts.add(entradaInserts);
-
 						indice = 0;
-
-						System.out.println("hay " + finTablasNew.size() + " tablas nuevas");
 
 						String sql = "";
 
@@ -133,8 +179,6 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 							sql = "INSERT INTO " + cabecerasTablas.get(z) + " (";
 
-							empezarInsers = numeroCamposTablasNew.get(z);
-							System.out.println("NUMERO DE COLUMNAS POR TABLA: " + empezarInsers);
 							for (int i = 0; i < finTablasNew.get(z); i++) {
 
 								i++;
@@ -151,43 +195,83 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 							}
 
-							sql += ") VALUES";
+							sql += ") VALUES ";
 
-							// System.out.println(numeroCamposTablasNew.size() + " ||-|| " +
-							// numeroCamposTablasOld.size());
+						}
 
-							for (int xy = empezarInsers; xy < entradaInserts.length; xy++) {
+						indice = 0;
 
-								sql += entradaInserts[xy];
+						contador = 0;
 
-								xy++;
+						int valoresPorDefecto = 0;
 
-								if (xy < finTablasNew.get(z)) {
+						for (int i = 0; i < numeroCamposTablasNew.size(); i++) {
 
-									sql += " , ";
+							contador = numeroCamposTablasNew.get(indice);
+
+							contador--;
+
+							valoresPorDefecto = numeroCamposTablasOld.get(indice);
+
+							valoresPorDefecto--;
+
+							System.out.println(numeroCamposTablasOld.get(indice) + valoresPorDefecto);
+
+							indice = 0;
+
+							for (int xy = 0; xy < inserts.size(); xy++) {
+
+								if (indice > 0 && indice % contador == 0) {
+
+									System.out.println("TEST " + xy + " - " + contador);
+
+									sql += " --),-- ";
+
+									indice = 0;
 
 								}
 
-								xy--;
+								sql += "(" + inserts.get(xy);
+
+								sql += " , ";
+
+								indice++;
 
 							}
 
-							sql += ";";
-
-							System.out.println("SQL: " + sql);
-
-							String insert;
-
-							System.out.println("\n");
-
 						}
+
+						sql += ";";
+
+						System.out.println("SQL: " + sql);
 
 					}
 
 					catch (Exception e1) {
+						e1.printStackTrace();
 					}
 
 				}
+			}
+
+			private String limpiarCadena(String cadena) {
+
+				cadena = cadena.replace("\n", "");
+
+				cadena = cadena.replace("\r", "");
+
+				cadena = cadena.replace("\t", "");
+
+				cadena = cadena.replace("  ", " ");
+
+				cadena = cadena.replace("(", "");
+
+				cadena = cadena.replace(")", "");
+
+				cadena = cadena.trim();
+
+				return cadena;
+
 			}
 		});
 
@@ -259,24 +343,10 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 		tablaOld.add("11id_cliente int");
 		tablaOld.add("avatar VARCHAR");
-		tablaOld.add("pedido VARCHAR");
-		tablaOld.add("avatar VARCHAR");
-		tablaOld.add("avatar VARCHAR");
 
 		tablaOld.add("FIN_TABLA");
-		tablaOld.add("CREATE TABLE test");
 
-		tablaOld.add("11id varchar");
-
-		tablaOld.add("11id_cliente int");
-
-		tablaOld.add("pedido VARCHAR");
-
-		tablaOld.add("avatar VARCHAR");
-		tablaOld.add("avatar VARCHAR");
-		tablaOld.add("FIN_TABLA");
-
-		tablaNew.add("CREATE TABLE test2");
+		tablaNew.add("CREATE TABLE albaranes");
 
 		tablaNew.add("id2 WWvarchar");
 
@@ -284,37 +354,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 		tablaNew.add("pedido2 WWVARCHAR");
 
-		tablaNew.add("avatar2 WWVARCHAR");
-
-		tablaNew.add("FIN_TABLA");
-
-		tablaNew.add("CREATE TABLE test3");
-
-		tablaNew.add("222id2 WWvarchar");
-
-		tablaNew.add("22333id_cliente2 WWint");
-
-		tablaNew.add("22244pedido2 WWVARCHAR");
-
-		tablaNew.add("25555avatar2 WWVARCHAR");
-
-		tablaNew.add("FIN_TABLA");
-
-		tablaNew.add("CREATE TABLE test3");
-
-		tablaNew.add("222id2 WWvarchar");
-
-		tablaNew.add("22333id_cliente2 WWint");
-
-		tablaNew.add("FIN_TABLA");
-
-		tablaNew.add("CREATE TABLE test3");
-
-		tablaNew.add("222id2 WWvarchar");
-
-		tablaNew.add("22333id_cliente2 WWint");
-
-		tablaNew.add("22244pedido2 WWVARCHAR");
+		tablaNew.add("pedido2 WWVARCHAR");
 
 		tablaNew.add("FIN_TABLA");
 
@@ -369,8 +409,6 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 			}
 
 			else {
-
-				System.out.println(i);
 
 				i--;
 
@@ -438,6 +476,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 						y++;
 
 					}
+
 					datoIndice = tabla.get(y).substring(0, tabla.get(y).indexOf(" "));
 
 					datoTipo = tabla.get(y).substring(tabla.get(y).indexOf(" ") + 1, tabla.get(y).length());
