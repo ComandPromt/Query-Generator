@@ -30,6 +30,26 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 	JTextArea entrada = new JTextArea("", 0, 50);
 
+	static LinkedList<String> indicesTablasOld = new LinkedList<String>();
+
+	static LinkedList<String> tiposTablasOld = new LinkedList<String>();
+
+	static LinkedList<Integer> finTablasOld = new LinkedList<Integer>();
+
+	static LinkedList<String> indicesTablasNew = new LinkedList<String>();
+
+	static LinkedList<String> tiposTablasNew = new LinkedList<String>();
+
+	static LinkedList<Integer> finTablasNew = new LinkedList<Integer>();
+
+	static LinkedList<String> inserts = new LinkedList<String>();
+
+	static LinkedList<String> cabecerasTablas = new LinkedList<String>();
+
+	static LinkedList<Integer> numeroCamposTablasOld = new LinkedList<Integer>();
+
+	static LinkedList<Integer> numeroCamposTablasNew = new LinkedList<Integer>();
+
 	public Main() {
 
 		setTitle("Query Generator");
@@ -70,63 +90,105 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-//				CREATE TABLE `albaranes` (
-//						  `id` varchar(40) COLLATE latin1_spanish_ci NOT NULL,
-//						  `id_cliente` int(11) NOT NULL,
-//						  `id_pedido` int(11) NOT NULL
-//						) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
 
-//				CREATE TABLE `albaranes` (
-//						  `id` varchar(40) COLLATE latin1_spanish_ci NOT NULL,
-//						  `cliente` int(11) NOT NULL,
-//						  `id_pedido` int(11) NOT NULL,
-//				  		  `avatar` varchar(30) NOT NULL,
-//				          `id_pedido` int(11) NOT NULL,
-//						) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+				if (!finTablasNew.isEmpty()) {
 
-				LinkedList<String> tablaOld = new LinkedList<String>();
+					try {
 
-				tablaOld.add("CREATE TABLE albaranes");
+						String[] entradaInserts;
 
-				tablaOld.add("id varchar");
+						entradaInserts = entrada.getText().split(" ");
 
-				tablaOld.add("id_cliente int");
+						int indice = 0;
 
-				tablaOld.add("pedido VARCHAR");
+						String reconstruirInserts = "";
 
-				tablaOld.add("FIN_TABLA");
+						for (int i = 1; i < entradaInserts.length; i++) {
 
-				tablaOld.add("CREATE TABLE albaranes2");
+							reconstruirInserts += entradaInserts[indice];
 
-				tablaOld.add("id2 varchar");
+							indice++;
 
-				tablaOld.add("id_cliente2 int");
+						}
 
-				tablaOld.add("pedido2 VARCHAR");
+						entradaInserts = reconstruirInserts.split(",");
 
-				tablaOld.add("FIN_TABLA");
+						for (int i = 0; i < entradaInserts.length; i++) {
 
-//				INSERT INTO `albaranes` (`id`, `id_cliente`, `id_pedido`) VALUES
-//				('1806690.pdf', 20, 24);
+							inserts.add(entradaInserts[i]);
 
-				String sql;
+						}
 
-				// for() {}
+						int empezarInsers = 0;
 
-				try {
+						// inserts.add(entradaInserts);
 
-					sql = "INSERT INTO ";
+						indice = 0;
+
+						System.out.println("hay " + finTablasNew.size() + " tablas nuevas");
+
+						String sql = "";
+
+						for (int z = 0; z < finTablasNew.size(); z++) {
+
+							sql = "INSERT INTO " + cabecerasTablas.get(z) + " (";
+
+							empezarInsers = numeroCamposTablasNew.get(z);
+							System.out.println("NUMERO DE COLUMNAS POR TABLA: " + empezarInsers);
+							for (int i = 0; i < finTablasNew.get(z); i++) {
+
+								i++;
+
+								sql += indicesTablasNew.get(indice);
+
+								if (i < finTablasNew.get(z)) {
+									sql += " , ";
+								}
+
+								i--;
+
+								indice++;
+
+							}
+
+							sql += ") VALUES";
+
+							// System.out.println(numeroCamposTablasNew.size() + " ||-|| " +
+							// numeroCamposTablasOld.size());
+
+							for (int xy = empezarInsers; xy < entradaInserts.length; xy++) {
+
+								sql += entradaInserts[xy];
+
+								xy++;
+
+								if (xy < finTablasNew.get(z)) {
+
+									sql += " , ";
+
+								}
+
+								xy--;
+
+							}
+
+							sql += ";";
+
+							System.out.println("SQL: " + sql);
+
+							String insert;
+
+							System.out.println("\n");
+
+						}
+
+					}
+
+					catch (Exception e1) {
+					}
 
 				}
-
-				catch (Exception e1) {
-					e1.printStackTrace();
-				}
-
-				System.out.println(entrada.getText());
-
 			}
-
 		});
 
 		JScrollPane scrollPane_1 = new JScrollPane((Component) null);
@@ -185,58 +247,243 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 	public static void main(String[] args) {
 
+		LinkedList<String> tablaOld = new LinkedList<String>();
+
 		LinkedList<String> tablaNew = new LinkedList<String>();
 
 		List<String> tablas;
 
-		tablaNew.add("CREATE TABLE test");
+		tablaOld.add("CREATE TABLE test");
 
-		tablaNew.add("id varchar");
+		tablaOld.add("11id varchar");
 
-		tablaNew.add("id_cliente int");
+		tablaOld.add("11id_cliente int");
+		tablaOld.add("avatar VARCHAR");
+		tablaOld.add("pedido VARCHAR");
+		tablaOld.add("avatar VARCHAR");
+		tablaOld.add("avatar VARCHAR");
 
-		tablaNew.add("pedido VARCHAR");
+		tablaOld.add("FIN_TABLA");
+		tablaOld.add("CREATE TABLE test");
 
-		tablaNew.add("avatar VARCHAR");
+		tablaOld.add("11id varchar");
 
-		tablaNew.add("FIN_TABLA");
+		tablaOld.add("11id_cliente int");
+
+		tablaOld.add("pedido VARCHAR");
+
+		tablaOld.add("avatar VARCHAR");
+		tablaOld.add("avatar VARCHAR");
+		tablaOld.add("FIN_TABLA");
 
 		tablaNew.add("CREATE TABLE test2");
 
-		tablaNew.add("id varchar");
+		tablaNew.add("id2 WWvarchar");
 
-		tablaNew.add("id_cliente int");
+		tablaNew.add("id_cliente2 WWint");
 
-		tablaNew.add("pedido VARCHAR");
+		tablaNew.add("pedido2 WWVARCHAR");
 
-		tablaNew.add("avatar VARCHAR");
+		tablaNew.add("avatar2 WWVARCHAR");
 
 		tablaNew.add("FIN_TABLA");
 
-		tablas = verDato(tablaNew);
+		tablaNew.add("CREATE TABLE test3");
+
+		tablaNew.add("222id2 WWvarchar");
+
+		tablaNew.add("22333id_cliente2 WWint");
+
+		tablaNew.add("22244pedido2 WWVARCHAR");
+
+		tablaNew.add("25555avatar2 WWVARCHAR");
+
+		tablaNew.add("FIN_TABLA");
+
+		tablaNew.add("CREATE TABLE test3");
+
+		tablaNew.add("222id2 WWvarchar");
+
+		tablaNew.add("22333id_cliente2 WWint");
+
+		tablaNew.add("FIN_TABLA");
+
+		tablaNew.add("CREATE TABLE test3");
+
+		tablaNew.add("222id2 WWvarchar");
+
+		tablaNew.add("22333id_cliente2 WWint");
+
+		tablaNew.add("22244pedido2 WWVARCHAR");
+
+		tablaNew.add("FIN_TABLA");
+
+		verDato(tablaOld, true);
+
+		verDato(tablaNew, false);
+
+		new Main().setVisible(true);
 
 	}
 
-	private static List<String> verDato(LinkedList<String> tablaNew) {
+	private static void verDato(LinkedList<String> tabla, boolean old) {
 
-		List<String> result = tablaNew.stream().filter(x -> x.contains("CREATE TABLE")).collect(Collectors.toList());
+		List<String> result = tabla.stream().filter(x -> x.contains("CREATE TABLE")).collect(Collectors.toList());
 
-		int finTabla = tablaNew.indexOf("FIN_TABLA");
+		int finTabla = 0;
+
+		int indice = 0;
+
+		int vueltas = 0;
+
+		int busqueda = 0;
+
+		String datoIndice;
+
+		String datoTipo;
+
+		int contador = 0;
+
+		LinkedList<Integer> busquedas = new LinkedList<Integer>();
 
 		for (int i = 0; i < result.size(); i++) {
 
-			for (int y = 0; y < finTabla; y++) {
+			vueltas = 0;
+
+			busqueda = tabla.indexOf("FIN_TABLA");
+
+			if (i == 0) {
+
+				if (old) {
+
+					numeroCamposTablasOld.add(busqueda);
+
+				}
+
+				else {
+
+					numeroCamposTablasNew.add(busqueda);
+
+				}
 
 			}
 
-			// result.set(i, result.get(i).substring(result.get(i).indexOf("CREATE TABLE") +
-			// 1, result.get(i).length()));
+			else {
+
+				System.out.println(i);
+
+				i--;
+
+				if (old) {
+
+					numeroCamposTablasOld.add((busqueda - numeroCamposTablasOld.get(i)) - 1);
+
+				}
+
+				else {
+
+					busquedas.add(busqueda);
+
+					if (i == 0) {
+
+						numeroCamposTablasNew.add((busquedas.getLast() - numeroCamposTablasNew.get(i)) - 1);
+
+					}
+
+					else {
+
+						--i;
+
+						numeroCamposTablasNew.add((busquedas.getLast() - busquedas.get(i)) - 1);
+
+						++i;
+
+					}
+
+				}
+
+				i++;
+
+			}
+
+			finTabla = tabla.indexOf("FIN_TABLA");
+
+			for (int y = indice; y < finTabla; y++) {
+
+				try {
+
+					vueltas++;
+
+					if (vueltas == 1) {
+
+						datoIndice = tabla.get(y).substring(tabla.get(y).indexOf("TABLE") + 5, tabla.get(y).length());
+
+						if (datoIndice.equals("RTED")) {
+
+							++y;
+
+							datoIndice = tabla.get(y).substring(tabla.get(y).indexOf("TABLE") + 5,
+									tabla.get(y).length());
+
+						}
+
+						datoIndice = datoIndice.trim();
+
+						if (!old && !datoIndice.isEmpty()) {
+
+							cabecerasTablas.add(datoIndice);
+
+						}
+
+						y++;
+
+					}
+					datoIndice = tabla.get(y).substring(0, tabla.get(y).indexOf(" "));
+
+					datoTipo = tabla.get(y).substring(tabla.get(y).indexOf(" ") + 1, tabla.get(y).length());
+
+					if (old) {
+
+						indicesTablasOld.add(datoIndice);
+
+						tiposTablasOld.add(datoTipo);
+
+					}
+
+					else {
+
+						indicesTablasNew.add(datoIndice);
+
+						tiposTablasNew.add(datoTipo);
+					}
+
+				}
+
+				catch (Exception e) {
+
+					vueltas = 0;
+
+				}
+
+			}
+
+			if (old) {
+
+				finTablasOld.add(vueltas);
+
+			}
+
+			else {
+
+				finTablasNew.add(vueltas);
+
+			}
+
+			indice = finTabla;
+
+			tabla.set(finTabla, "INSERTED");
 
 		}
-
-		System.out.println(result.get(0).substring(result.get(0).indexOf("TABLE") + 5, result.get(0).length()));
-
-		return result;
 
 	}
 
