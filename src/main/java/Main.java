@@ -91,6 +91,50 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 			public void actionPerformed(ActionEvent e) {
 
+				indicesTablasOld.clear();
+
+				tiposTablasOld.clear();
+
+				finTablasOld.clear();
+
+				indicesTablasNew.clear();
+
+				tiposTablasNew.clear();
+
+				finTablasNew.clear();
+
+				inserts.clear();
+
+				cabecerasTablas.clear();
+
+				numeroCamposTablasOld.clear();
+
+				numeroCamposTablasNew.clear();
+
+				LinkedList<String> tablaOld = new LinkedList<String>();
+
+				LinkedList<String> tablaNew = new LinkedList<String>();
+
+				List<String> tablas;
+
+				tablaOld.add("CREATE TABLE familias");
+
+				tablaOld.add("id int");
+
+				tablaOld.add("nombre varchar");
+
+				tablaOld.add("FIN_TABLA");
+
+				tablaNew.add("CREATE TABLE provincias");
+
+				tablaNew.add("NOMBRE varchar");
+
+				tablaNew.add("FIN_TABLA");
+
+				verDato(tablaOld, true);
+
+				verDato(tablaNew, false);
+
 				if (!finTablasNew.isEmpty()) {
 
 					try {
@@ -107,7 +151,7 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 						String reconstruirInserts = "";
 
-						for (int i = 1; i < inputInserts.length; i++) {
+						for (int i = 0; i < inputInserts.length; i++) {
 
 							reconstruirInserts += inputInserts[indice];
 
@@ -117,17 +161,9 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 						inputInserts = reconstruirInserts.split(",");
 
-						for (int i = 1; i < inputInserts.length; i++) {
+						for (int i = 0; i < inputInserts.length; i++) {
 
 							entradaInserts.add(inputInserts[i]);
-
-						}
-
-						try {
-							entradaInserts.add(texto.substring(texto.lastIndexOf(",") + 1, texto.length()));
-						}
-
-						catch (Exception e1) {
 
 						}
 
@@ -151,7 +187,15 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 							}
 
-							entradaInserts.set(i, limpiarCadena(entradaInserts.get(i)));
+							try {
+
+								entradaInserts.set(i, limpiarCadena(entradaInserts.get(i)));
+
+							}
+
+							catch (Exception e1) {
+
+							}
 
 							if (!entradaInserts.get(i).isEmpty()) {
 
@@ -175,33 +219,34 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 						String sql = "";
 
-						for (int z = 0; z < finTablasNew.size(); z++) {
+						for (int x = 0; x < cabecerasTablas.size(); x++) {
 
-							sql = "INSERT INTO " + cabecerasTablas.get(z) + " (";
+							sql = "INSERT INTO " + cabecerasTablas.get(x) + " (";
 
-							for (int i = 0; i < finTablasNew.get(z); i++) {
+							for (int i = 0; i < indicesTablasNew.size(); i++) {
+
+								sql += indicesTablasNew.get(i);
 
 								i++;
 
-								sql += indicesTablasNew.get(indice);
+								if (i < indicesTablasNew.size()) {
 
-								if (i < finTablasNew.get(z)) {
 									sql += " , ";
+
 								}
 
 								i--;
 
-								indice++;
-
 							}
-
-							sql += ") VALUES ";
-
 						}
+
+						sql += ") VALUES ";
 
 						indice = 0;
 
 						contador = 0;
+
+						int numeroInserts = 0;
 
 						int valoresPorDefecto = 0;
 
@@ -215,35 +260,56 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 							valoresPorDefecto--;
 
-							System.out.println(numeroCamposTablasOld.get(indice) + valoresPorDefecto);
+							indice = 1;
 
-							indice = 0;
+							System.out.println("NUMERO INSERTS: " + inserts.size());
 
 							for (int xy = 0; xy < inserts.size(); xy++) {
 
+								sql += "('" + inserts.get(xy);
+
 								if (indice > 0 && indice % contador == 0) {
 
-									System.out.println("TEST " + xy + " - " + contador);
-
-									sql += " --),-- ";
+									sql += "'), ";
 
 									indice = 0;
 
 								}
 
-								sql += "(" + inserts.get(xy);
+								numeroInserts++;
 
-								sql += " , ";
+								// if (indice < numeroCamposTablasNew.size()) {
 
 								indice++;
+
+								// }
+
+								if (numeroInserts > contador) {
+									numeroInserts = 0;
+								}
 
 							}
 
 						}
 
+						numeroInserts++;
+
+						System.out.println(numeroInserts + " - " + contador);
+
+						if (numeroInserts < contador) {
+
+							for (int i = 0; i < contador - numeroInserts; i++) {
+
+								sql += "DEFAULT,";
+							}
+
+							sql += " --),-- ";
+
+						}
+
 						sql += ";";
 
-						System.out.println("SQL: " + sql);
+						salida.setText(sql);
 
 					}
 
@@ -282,20 +348,20 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 		JScrollPane scrollPane_2 = new JScrollPane((Component) null);
 		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.TRAILING).addGroup(layout.createSequentialGroup()
-				.addContainerGap(61, Short.MAX_VALUE)
-				.addGroup(layout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE))
-				.addGap(50))
-				.addGroup(Alignment.LEADING, layout.createSequentialGroup().addGap(184).addComponent(btnNewButton)
-						.addContainerGap(203, Short.MAX_VALUE)));
+		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(Alignment.TRAILING, layout
+				.createSequentialGroup().addContainerGap(51, Short.MAX_VALUE)
+				.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(btnNewButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
+				.addGap(50)));
 		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addGap(36)
 						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 227, GroupLayout.PREFERRED_SIZE)
 						.addGap(33).addComponent(btnNewButton).addGap(32)
 						.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 210, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(37, Short.MAX_VALUE)));
+						.addContainerGap(36, Short.MAX_VALUE)));
 
 		salida = new JTextArea("", 0, 50);
 
@@ -330,37 +396,6 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 	}
 
 	public static void main(String[] args) {
-
-		LinkedList<String> tablaOld = new LinkedList<String>();
-
-		LinkedList<String> tablaNew = new LinkedList<String>();
-
-		List<String> tablas;
-
-		tablaOld.add("CREATE TABLE test");
-
-		tablaOld.add("11id varchar");
-
-		tablaOld.add("11id_cliente int");
-		tablaOld.add("avatar VARCHAR");
-
-		tablaOld.add("FIN_TABLA");
-
-		tablaNew.add("CREATE TABLE albaranes");
-
-		tablaNew.add("id2 WWvarchar");
-
-		tablaNew.add("id_cliente2 WWint");
-
-		tablaNew.add("pedido2 WWVARCHAR");
-
-		tablaNew.add("pedido2 WWVARCHAR");
-
-		tablaNew.add("FIN_TABLA");
-
-		verDato(tablaOld, true);
-
-		verDato(tablaNew, false);
 
 		new Main().setVisible(true);
 
@@ -401,6 +436,8 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 				}
 
 				else {
+
+					busqueda -= contarIteraciones(tabla);
 
 					numeroCamposTablasNew.add(busqueda);
 
@@ -479,21 +516,25 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 					datoIndice = tabla.get(y).substring(0, tabla.get(y).indexOf(" "));
 
-					datoTipo = tabla.get(y).substring(tabla.get(y).indexOf(" ") + 1, tabla.get(y).length());
+					if (!datoIndice.contains("FOREIGN")) {
 
-					if (old) {
+						datoTipo = tabla.get(y).substring(tabla.get(y).indexOf(" ") + 1, tabla.get(y).length());
 
-						indicesTablasOld.add(datoIndice);
+						if (old) {
 
-						tiposTablasOld.add(datoTipo);
+							indicesTablasOld.add(datoIndice);
 
-					}
+							tiposTablasOld.add(datoTipo);
 
-					else {
+						}
 
-						indicesTablasNew.add(datoIndice);
+						else {
 
-						tiposTablasNew.add(datoTipo);
+							indicesTablasNew.add(datoIndice);
+
+							tiposTablasNew.add(datoTipo);
+						}
+
 					}
 
 				}
@@ -524,6 +565,28 @@ public class Main extends javax.swing.JFrame implements ActionListener, ChangeLi
 
 		}
 
+	}
+
+	private static int contarIteraciones(LinkedList<String> lista) {
+
+		String cadena = "";
+
+		int contador = 0;
+
+		for (int i = 0; i < lista.size(); i++) {
+
+			cadena += lista.get(i);
+
+		}
+
+		while (cadena.indexOf("FOREIGN") > -1) {
+
+			cadena = cadena.substring(cadena.indexOf("FOREIGN") + "FOREIGN".length(), cadena.length());
+
+			contador++;
+		}
+
+		return contador;
 	}
 
 	public void stateChanged(ChangeEvent e) {
